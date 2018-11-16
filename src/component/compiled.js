@@ -103,9 +103,9 @@ var ReactImageUploadComponent = function (_React$Component) {
 
       var files = e.target.files;
       var allFilePromises = [];
-
+      var imageCount = files.length > this.props.maxCount ? this.props.maxCount : files.length;
       // Iterate over all uploaded files
-      for (var i = 0; i < files.length; i++) {
+      for (var i = 0; i < imageCount; i++) {
         var f = files[i];
         // Check for file extension
         if (!this.hasExtension(f.name)) {
@@ -314,7 +314,7 @@ var ReactImageUploadComponent = function (_React$Component) {
         { className: "fileUploader " + this.props.className, style: this.props.style },
         _react2.default.createElement(
           'div',
-          { className: 'fileContainer' },
+          { className: 'fileContainer', style: this.props.fileContainerStyle },
           this.renderIcon(),
           this.renderLabel(),
           _react2.default.createElement(
@@ -354,6 +354,7 @@ var ReactImageUploadComponent = function (_React$Component) {
 
 ReactImageUploadComponent.defaultProps = {
   className: '',
+  fileContainerStyle: {},
   buttonClassName: "",
   buttonStyles: {},
   withPreview: false,
@@ -375,11 +376,13 @@ ReactImageUploadComponent.defaultProps = {
   errorStyle: {},
   singleImage: false,
   onChange: function onChange() {},
-  defaultImage: ""
+  defaultImage: "",
+  maxCount: 5
 };
 
 ReactImageUploadComponent.propTypes = {
   style: _propTypes2.default.object,
+  fileContainerStyle: _propTypes2.default.object,
   className: _propTypes2.default.string,
   onChange: _propTypes2.default.func,
   onDelete: _propTypes2.default.func,
@@ -402,7 +405,8 @@ ReactImageUploadComponent.propTypes = {
   errorClass: _propTypes2.default.string,
   errorStyle: _propTypes2.default.object,
   singleImage: _propTypes2.default.bool,
-  defaultImage: _propTypes2.default.string
+  defaultImage: _propTypes2.default.string,
+  maxCount: _propTypes2.default.number
 };
 
 exports.default = ReactImageUploadComponent;

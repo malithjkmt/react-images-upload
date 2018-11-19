@@ -105,7 +105,15 @@ var ReactImageUploadComponent = function (_React$Component) {
       var allFilePromises = [];
       var newCount = this.state.files.length + e.target.files.length;
 
-      var imageCount = newCount > this.props.maxCount ? this.props.maxCount - this.state.files.length : files.length;
+      // let imageCount = newCount > this.props.maxCount ? (this.props.maxCount - this.state.files.length) : files.length
+      var imageCount = void 0;
+
+      if (newCount > this.props.maxCount) {
+        imageCount = this.props.maxCount - this.state.files.length;
+        this.props.onError('MAX_COUNT_EXCEEDED');
+      } else {
+        imageCount = files.length;
+      }
 
       // Iterate over all uploaded files
       for (var i = 0; i < imageCount; i++) {
@@ -380,7 +388,11 @@ ReactImageUploadComponent.defaultProps = {
   singleImage: false,
   onChange: function onChange() {},
   defaultImage: "",
-  maxCount: 5
+  maxCount: 5,
+  onError: function onError(error) {
+    console.log(error);
+  }
+
 };
 
 ReactImageUploadComponent.propTypes = {
@@ -409,7 +421,9 @@ ReactImageUploadComponent.propTypes = {
   errorStyle: _propTypes2.default.object,
   singleImage: _propTypes2.default.bool,
   defaultImage: _propTypes2.default.string,
-  maxCount: _propTypes2.default.number
+  maxCount: _propTypes2.default.number,
+  onError: _propTypes2.default.func
+
 };
 
 exports.default = ReactImageUploadComponent;

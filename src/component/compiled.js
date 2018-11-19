@@ -103,7 +103,10 @@ var ReactImageUploadComponent = function (_React$Component) {
 
       var files = e.target.files;
       var allFilePromises = [];
-      var imageCount = files.length > this.props.maxCount ? this.props.maxCount : files.length;
+      var newCount = this.state.files.length + e.target.files.length;
+
+      var imageCount = newCount > this.props.maxCount ? this.props.maxCount - this.state.files.length : files.length;
+
       // Iterate over all uploaded files
       for (var i = 0; i < imageCount; i++) {
         var f = files[i];

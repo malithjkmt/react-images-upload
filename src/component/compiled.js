@@ -420,7 +420,7 @@ ReactImageUploadComponent.propTypes = {
   errorClass: _propTypes2.default.string,
   errorStyle: _propTypes2.default.object,
   singleImage: _propTypes2.default.bool,
-  defaultImage: _propTypes2.default.array,
+  defaultImages: _propTypes2.default.array,
   maxCount: _propTypes2.default.number,
   onError: _propTypes2.default.func
 

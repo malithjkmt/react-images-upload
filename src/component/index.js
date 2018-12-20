@@ -16,7 +16,8 @@ class ReactImageUploadComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      pictures: props.defaultImages ? props.defaultImages : [],
+      defaultPix: props.defaultImages ? props.defaultImages : [],
+      pictures: [],
       files: [],
       notAcceptedFileType: [],
       notAcceptedFileSize: []
@@ -56,7 +57,7 @@ class ReactImageUploadComponent extends React.Component {
   onDropFile(e) {
     const files = e.target.files;
     const allFilePromises = [];
-    let newCount = this.state.pictures.length + e.target.files.length;
+    let newCount = this.state.pictures.length + files.length + this.state.defaultPix.length;
 
     console.log("this.state.pictures: ", this.state.pictures);
     console.log("Total images: ", newCount);
@@ -65,7 +66,7 @@ class ReactImageUploadComponent extends React.Component {
     let imageCount;
 
     if (newCount > this.props.maxCount) {
-      imageCount = this.props.maxCount - this.state.pictures.length;
+      imageCount = this.props.maxCount - (this.state.pictures.length + this.state.defaultPix.length);
       this.props.onError('MAX_COUNT_EXCEEDED');
     }
     else {
@@ -145,6 +146,15 @@ class ReactImageUploadComponent extends React.Component {
     });
   }
 
+  removeDefaultImage(picture) {
+    const removeIndex = this.state.defaultPix.findIndex(e => e === picture);
+    const filteredPictures = this.state.defaultPix.filter((e, index) => index !== removeIndex);
+
+    this.setState({ defaultPix: filteredPictures }, () => {
+      this.props.onChange(this.state.files, this.state.pictures);
+    });
+  }
+
   /*
    Check if any errors && render
    */
@@ -196,6 +206,7 @@ class ReactImageUploadComponent extends React.Component {
     return (
       <div className="uploadPicturesWrapper">
         <FlipMove enterAnimation="fade" leaveAnimation="fade" style={styles}>
+          {this.renderDefaultPictures()}
           {this.renderPreviewPictures()}
         </FlipMove>
       </div>
@@ -207,6 +218,17 @@ class ReactImageUploadComponent extends React.Component {
       return (
         <div key={index} className="uploadPictureContainer">
           <div className="deleteImage" onClick={() => this.removeImage(picture)}>X</div>
+          <img src={picture} className="uploadPicture" alt="preview" />
+        </div>
+      );
+    });
+  }
+
+  renderDefaultPictures() {
+    return this.state.defaultPix.map((picture, index) => {
+      return (
+        <div key={index} className="uploadPictureContainer">
+          <div className="deleteImage" onClick={() => this.removeDefaultImage(picture)}>X</div>
           <img src={picture} className="uploadPicture" alt="preview" />
         </div>
       );
@@ -310,7 +332,7 @@ ReactImageUploadComponent.propTypes = {
   errorClass: PropTypes.string,
   errorStyle: PropTypes.object,
   singleImage: PropTypes.bool,
-  defaultImage: PropTypes.array,
+  defaultImages: PropTypes.array,
   maxCount: PropTypes.number,
   onError: PropTypes.func
 

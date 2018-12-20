@@ -136,26 +136,21 @@ class ReactImageUploadComponent extends React.Component {
   /*
    Remove the image from state
    */
-  removeImage(picture) {
-    const removeIndex = this.state.pictures.findIndex(e => e === picture);
-    const filteredPictures = this.state.pictures.filter((e, index) => index !== removeIndex);
+  removeImage(picture, removeFrom, isDefault) {
+    const removeIndex = removeFrom.findIndex(e => e === picture);
+    const filteredPictures = removeFrom.filter((e, index) => index !== removeIndex);
     const filteredFiles = this.state.files.filter((e, index) => index !== removeIndex);
 
-    this.setState({ pictures: filteredPictures, files: filteredFiles }, () => {
-      this.props.onChange(this.state.files, this.state.defaultPix, this.state.removedDefaultImages);
-    });
-  }
-
-  removeDefaultImage(picture) {
-    const removeIndex = this.state.defaultPix.findIndex(e => e === picture);
-    const filteredPictures = this.state.defaultPix.filter((e, index) => index !== removeIndex);
-    this.setState({
-      removedDefaultImages: [...this.state.removedDefaultImages, picture]
-    })
-
-    this.setState({ defaultPix: filteredPictures }, () => {
-      this.props.onChange(this.state.files, this.state.defaultPix, this.state.removedDefaultImages);
-    });
+    if (isDefault) {
+      this.setState({ defaultPix: filteredPictures, removedDefaultImages: [...this.state.removedDefaultImages, picture] }, () => {
+        this.props.onChange(this.state.files, this.state.defaultPix, this.state.removedDefaultImages);
+      });
+    }
+    else {
+      this.setState({ pictures: filteredPictures, files: filteredFiles }, () => {
+        this.props.onChange(this.state.files, this.state.defaultPix, this.state.removedDefaultImages);
+      });
+    }
   }
 
   /*
@@ -220,7 +215,7 @@ class ReactImageUploadComponent extends React.Component {
     return this.state.pictures.map((picture, index) => {
       return (
         <div key={index} className="uploadPictureContainer">
-          <div className="deleteImage" onClick={() => this.removeImage(picture)}>X</div>
+          <div className="deleteImage" onClick={() => this.removeImage(picture, this.state.pictures, false)}>X</div>
           <img src={picture} className="uploadPicture" alt="preview" />
         </div>
       );
@@ -231,7 +226,7 @@ class ReactImageUploadComponent extends React.Component {
     return this.state.defaultPix.map((picture, index) => {
       return (
         <div key={index} className="uploadPictureContainer">
-          <div className="deleteImage" onClick={() => this.removeDefaultImage(picture)}>X</div>
+          <div className="deleteImage" onClick={() => this.removeImage(picture, this.state.defaultPix, true)}>X</div>
           <img src={picture} className="uploadPicture" alt="preview" />
         </div>
       );

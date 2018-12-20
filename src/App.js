@@ -38,6 +38,22 @@ class App extends React.Component {
 
 
 export default class App extends React.PureComponent {
+    constructor(props) {
+        console.log("Construtor . . .");
+        super(props);
+        this.state = { pictures: [] };
+        this.onDrop = this.onDrop.bind(this);
+    }
+
+    onDrop(pictureFiles, pictureDataURLs) {
+        console.log("OnDrop . . .");
+        this.setState({
+            pictures: pictureFiles
+        }, () => {
+            console.log("Out State:", this.state.pictures);
+        });
+
+    }
     render() {
         return (
             <div className="page">
@@ -45,7 +61,9 @@ export default class App extends React.PureComponent {
                 <p>Simple component for upload and validate (client side) images with preview built with React.js.</p>
                 <div className="head">Demo</div>
                 <ImageUploader style={{ maxWidth: '500px', margin: "20px auto" }}
-                               withPreview={true} />
+                    defaultImages={['https://vignette.wikia.nocookie.net/disney/images/b/ba/Eugene-Tangled.jpg/revision/latest?cb=20181014194739']}
+                    withPreview={true}
+                    onChange={this.onDrop} />
                 <div className="head">Installation</div>
                 <SyntaxHighlighter language='javascript' showLineNumbers={true} style={rainbow}>
                     {steps.one}
@@ -83,13 +101,13 @@ export default class App extends React.PureComponent {
                             <td className="text-left">-</td>
                             <td className="text-left">On change handler for the input.</td>
                         </tr>
-                         <tr>
+                        <tr>
                             <td className="text-left">onDelete</td>
                             <td className="text-left">Function</td>
                             <td className="text-left">-</td>
                             <td className="text-left">On delete handler for the image.</td>
                         </tr>
-                       <tr>
+                        <tr>
                             <td className="text-left">buttonClassName</td>
                             <td className="text-left">String</td>
                             <td className="text-left">-</td>
@@ -197,7 +215,7 @@ export default class App extends React.PureComponent {
                             <td className="text-left">['.jpg', '.gif', '.png', '.gif']</td>
                             <td className="text-left">Inline styles for errors .</td>
                         </tr>
-                    <tr>
+                        <tr>
                             <td className="text-left">singleImage</td>
                             <td className="text-left">Boolean</td>
                             <td className="text-left">false</td>

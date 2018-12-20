@@ -37,9 +37,9 @@ class ReactImageUploadComponent extends React.Component {
    Load image at the beggining if defaultImages prop exists
    */
   componentWillReceiveProps(nextProps) {
-    if (nextProps.defaultImages) {
-      this.setState({ pictures: nextProps.defaultImages });
-    }
+    // if (nextProps.defaultImages) {
+    //   this.setState({ pictures: nextProps.defaultImages });
+    // }
   }
 
   /*
@@ -56,13 +56,16 @@ class ReactImageUploadComponent extends React.Component {
   onDropFile(e) {
     const files = e.target.files;
     const allFilePromises = [];
-    let newCount = this.state.files.length + e.target.files.length;
+    let newCount = this.state.pictures.length + e.target.files.length;
+
+    console.log("this.state.pictures: ", this.state.pictures);
+    console.log("Total images: ", newCount);
 
     // let imageCount = newCount > this.props.maxCount ? (this.props.maxCount - this.state.files.length) : files.length
     let imageCount;
 
     if (newCount > this.props.maxCount) {
-      imageCount = this.props.maxCount - this.state.files.length;
+      imageCount = this.props.maxCount - this.state.pictures.length;
       this.props.onError('MAX_COUNT_EXCEEDED');
     }
     else {
@@ -218,6 +221,8 @@ class ReactImageUploadComponent extends React.Component {
   }
 
   render() {
+    console.log("Render . . .");
+    console.log("STATE", this.state);
     return (
       <div className={"fileUploader " + this.props.className} style={this.props.style}>
         <div className="fileContainer" style={this.props.fileContainerStyle}>

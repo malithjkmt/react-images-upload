@@ -17,6 +17,7 @@ class ReactImageUploadComponent extends React.Component {
     super(props);
     this.state = {
       defaultPix: props.defaultImages ? props.defaultImages : [],
+      removedDefaultImages: [],
       pictures: [],
       files: [],
       notAcceptedFileType: [],
@@ -30,7 +31,7 @@ class ReactImageUploadComponent extends React.Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevState.files !== this.state.files) {
-      this.props.onChange(this.state.files, this.state.pictures);
+      this.props.onChange(this.state.files, this.state.defaultPix, this.state.removedDefaultImages);
     }
   }
 
@@ -59,8 +60,7 @@ class ReactImageUploadComponent extends React.Component {
     const allFilePromises = [];
     let newCount = this.state.pictures.length + files.length + this.state.defaultPix.length;
 
-    console.log("this.state.pictures: ", this.state.pictures);
-    console.log("Total images: ", newCount);
+    //console.log("Total images: ", newCount);
 
     // let imageCount = newCount > this.props.maxCount ? (this.props.maxCount - this.state.files.length) : files.length
     let imageCount;
@@ -104,7 +104,7 @@ class ReactImageUploadComponent extends React.Component {
       });
 
       this.setState({ pictures: dataURLs, files: files }, () => {
-        this.props.onChange(this.state.files, this.state.pictures);
+        this.props.onChange(this.state.files, this.state.defaultPix, this.state.removedDefaultImages);
       });
     });
   }
@@ -142,16 +142,19 @@ class ReactImageUploadComponent extends React.Component {
     const filteredFiles = this.state.files.filter((e, index) => index !== removeIndex);
 
     this.setState({ pictures: filteredPictures, files: filteredFiles }, () => {
-      this.props.onChange(this.state.files, this.state.pictures);
+      this.props.onChange(this.state.files, this.state.defaultPix, this.state.removedDefaultImages);
     });
   }
 
   removeDefaultImage(picture) {
     const removeIndex = this.state.defaultPix.findIndex(e => e === picture);
     const filteredPictures = this.state.defaultPix.filter((e, index) => index !== removeIndex);
+    this.setState({
+      removedDefaultImages: [...this.state.removedDefaultImages, picture]
+    })
 
     this.setState({ defaultPix: filteredPictures }, () => {
-      this.props.onChange(this.state.files, this.state.pictures);
+      this.props.onChange(this.state.files, this.state.defaultPix, this.state.removedDefaultImages);
     });
   }
 
@@ -243,8 +246,7 @@ class ReactImageUploadComponent extends React.Component {
   }
 
   render() {
-    console.log("Render . . .");
-    console.log("STATE", this.state);
+    console.log("Module STATE", this.state);
     return (
       <div className={"fileUploader " + this.props.className} style={this.props.style}>
         <div className="fileContainer" style={this.props.fileContainerStyle}>

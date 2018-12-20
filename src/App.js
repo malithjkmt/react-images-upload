@@ -3,9 +3,6 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import ImageUploader from './component/index.js';
 import { rainbow } from 'react-syntax-highlighter/styles/hljs';
 
-const defaultImgArr = ['https://vignette.wikia.nocookie.net/disney/images/b/ba/Eugene-Tangled.jpg/revision/latest?cb=20181014194739',
-    'https://imgix.bustle.com/uploads/image/2018/6/22/deb12b3a-97c4-45e6-8f48-e4308987619e-incredibles-2-2.jpg?w=970&h=546&fit=crop&crop=faces&auto=format&q=70',
-    'https://www.hindustantimes.com/rf/image_size_960x540/HT/p2/2016/12/02/Pictures/_5e438be8-b86c-11e6-85ae-b37d8b2b78fb.jpg'];
 const steps = {
     one: `npm install --save react-images-upload`,
     two: `import React from 'react';
@@ -41,32 +38,6 @@ class App extends React.Component {
 
 
 export default class App extends React.PureComponent {
-    constructor(props) {
-        super(props);
-        this.state = { newImageFilesList: [], defaultImageUrlList: [], finalImageUrlList: [] };
-        this.onDrop = this.onDrop.bind(this);
-    }
-
-    onDrop(imageFiles, defaultImgUrls, removedDefaultImages) {
-        console.log("---imageFiles", imageFiles);   //imageFiles - upload to s3
-        console.log("---defaultImgUrls", defaultImgUrls)    //defaultImgUrls - stays in db
-        console.log("---removedDefaultImages", removedDefaultImages);   //removedDefaultImages - to be removed from s3
-
-        this.setState({
-            CallCount: 1
-        }, () => {
-            if (this.state.CallCount === 1) {
-                this.setState({
-                    newImageFilesList: imageFiles
-                })
-            }
-            this.setState({
-                CallCount: 2
-            });
-        });
-
-    }
-
     render() {
         return (
             <div className="page">
@@ -74,7 +45,6 @@ export default class App extends React.PureComponent {
                 <p>Simple component for upload and validate (client side) images with preview built with React.js.</p>
                 <div className="head">Demo</div>
                 <ImageUploader style={{ maxWidth: '500px', margin: "20px auto" }}
-                    defaultImages={defaultImgArr}
                     withPreview={true}
                     onChange={this.onDrop}
                     maxCount={6} />

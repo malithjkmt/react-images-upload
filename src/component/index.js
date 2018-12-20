@@ -60,8 +60,6 @@ class ReactImageUploadComponent extends React.Component {
     const allFilePromises = [];
     let newCount = this.state.pictures.length + files.length + this.state.defaultPix.length;
 
-    //console.log("Total images: ", newCount);
-
     // let imageCount = newCount > this.props.maxCount ? (this.props.maxCount - this.state.files.length) : files.length
     let imageCount;
 
@@ -241,7 +239,6 @@ class ReactImageUploadComponent extends React.Component {
   }
 
   render() {
-    console.log("Module STATE", this.state);
     return (
       <div className={"fileUploader " + this.props.className} style={this.props.style}>
         <div className="fileContainer" style={this.props.fileContainerStyle}>

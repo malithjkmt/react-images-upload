@@ -26,6 +26,8 @@ var _UploadIcon2 = _interopRequireDefault(_UploadIcon);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -49,7 +51,9 @@ var ReactImageUploadComponent = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (ReactImageUploadComponent.__proto__ || Object.getPrototypeOf(ReactImageUploadComponent)).call(this, props));
 
     _this.state = {
-      pictures: props.defaultImage ? [props.defaultImage] : [],
+      defaultPix: props.defaultImages ? props.defaultImages : [],
+      removedDefaultImages: [],
+      pictures: [],
       files: [],
       notAcceptedFileType: [],
       notAcceptedFileSize: []
@@ -65,21 +69,21 @@ var ReactImageUploadComponent = function (_React$Component) {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps, prevState, snapshot) {
       if (prevState.files !== this.state.files) {
-        this.props.onChange(this.state.files, this.state.pictures);
+        this.props.onChange(this.state.files, this.state.defaultPix, this.state.removedDefaultImages);
       }
     }
 
     /*
-     Load image at the beggining if defaultImage prop exists
+     Load image at the beggining if defaultImages prop exists
      */
 
   }, {
     key: 'componentWillReceiveProps',
-    value: function componentWillReceiveProps(nextProps) {
-      if (nextProps.defaultImage) {
-        this.setState({ pictures: [nextProps.defaultImage] });
-      }
-    }
+    value: function componentWillReceiveProps(nextProps) {}
+    // if (nextProps.defaultImages) {
+    //   this.setState({ pictures: nextProps.defaultImages });
+    // }
+
 
     /*
     Check file extension (onDropFile)
@@ -103,7 +107,18 @@ var ReactImageUploadComponent = function (_React$Component) {
 
       var files = e.target.files;
       var allFilePromises = [];
-      var imageCount = files.length > this.props.maxCount ? this.props.maxCount : files.length;
+      var newCount = this.state.pictures.length + files.length + this.state.defaultPix.length;
+
+      // let imageCount = newCount > this.props.maxCount ? (this.props.maxCount - this.state.files.length) : files.length
+      var imageCount = void 0;
+
+      if (newCount > this.props.maxCount) {
+        imageCount = this.props.maxCount - (this.state.pictures.length + this.state.defaultPix.length);
+        this.props.onError('MAX_COUNT_EXCEEDED');
+      } else {
+        imageCount = files.length;
+      }
+
       // Iterate over all uploaded files
       for (var i = 0; i < imageCount; i++) {
         var f = files[i];
@@ -135,7 +150,7 @@ var ReactImageUploadComponent = function (_React$Component) {
         });
 
         _this2.setState({ pictures: dataURLs, files: files }, function () {
-          _this2.props.onChange(_this2.state.files, _this2.state.pictures);
+          _this2.props.onChange(_this2.state.files, _this2.state.defaultPix, _this2.state.removedDefaultImages);
         });
       });
     }
@@ -174,22 +189,28 @@ var ReactImageUploadComponent = function (_React$Component) {
 
   }, {
     key: 'removeImage',
-    value: function removeImage(picture) {
+    value: function removeImage(picture, removeFrom, isDefault) {
       var _this3 = this;
 
-      var removeIndex = this.state.pictures.findIndex(function (e) {
+      var removeIndex = removeFrom.findIndex(function (e) {
         return e === picture;
       });
-      var filteredPictures = this.state.pictures.filter(function (e, index) {
+      var filteredPictures = removeFrom.filter(function (e, index) {
         return index !== removeIndex;
       });
       var filteredFiles = this.state.files.filter(function (e, index) {
         return index !== removeIndex;
       });
 
-      this.setState({ pictures: filteredPictures, files: filteredFiles }, function () {
-        _this3.props.onChange(_this3.state.files, _this3.state.pictures);
-      });
+      if (isDefault) {
+        this.setState({ defaultPix: filteredPictures, removedDefaultImages: [].concat(_toConsumableArray(this.state.removedDefaultImages), [picture]) }, function () {
+          _this3.props.onChange(_this3.state.files, _this3.state.defaultPix, _this3.state.removedDefaultImages);
+        });
+      } else {
+        this.setState({ pictures: filteredPictures, files: filteredFiles }, function () {
+          _this3.props.onChange(_this3.state.files, _this3.state.defaultPix, _this3.state.removedDefaultImages);
+        });
+      }
     }
 
     /*
@@ -270,6 +291,7 @@ var ReactImageUploadComponent = function (_React$Component) {
         _react2.default.createElement(
           _reactFlipMove2.default,
           { enterAnimation: 'fade', leaveAnimation: 'fade', style: styles },
+          this.renderDefaultPictures(),
           this.renderPreviewPictures()
         )
       );
@@ -286,7 +308,27 @@ var ReactImageUploadComponent = function (_React$Component) {
           _react2.default.createElement(
             'div',
             { className: 'deleteImage', onClick: function onClick() {
-                return _this5.removeImage(picture);
+                return _this5.removeImage(picture, _this5.state.pictures, false);
+              } },
+            'X'
+          ),
+          _react2.default.createElement('img', { src: picture, className: 'uploadPicture', alt: 'preview' })
+        );
+      });
+    }
+  }, {
+    key: 'renderDefaultPictures',
+    value: function renderDefaultPictures() {
+      var _this6 = this;
+
+      return this.state.defaultPix.map(function (picture, index) {
+        return _react2.default.createElement(
+          'div',
+          { key: index, className: 'uploadPictureContainer' },
+          _react2.default.createElement(
+            'div',
+            { className: 'deleteImage', onClick: function onClick() {
+                return _this6.removeImage(picture, _this6.state.defaultPix, true);
               } },
             'X'
           ),
@@ -307,7 +349,7 @@ var ReactImageUploadComponent = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this6 = this;
+      var _this7 = this;
 
       return _react2.default.createElement(
         'div',
@@ -335,7 +377,7 @@ var ReactImageUploadComponent = function (_React$Component) {
           _react2.default.createElement('input', {
             type: 'file',
             ref: function ref(input) {
-              return _this6.inputElement = input;
+              return _this7.inputElement = input;
             },
             name: this.props.name,
             multiple: !this.props.singleImage,
@@ -376,8 +418,12 @@ ReactImageUploadComponent.defaultProps = {
   errorStyle: {},
   singleImage: false,
   onChange: function onChange() {},
-  defaultImage: "",
-  maxCount: 5
+  defaultImages: [],
+  maxCount: 5,
+  onError: function onError(error) {
+    console.log(error);
+  }
+
 };
 
 ReactImageUploadComponent.propTypes = {
@@ -405,8 +451,10 @@ ReactImageUploadComponent.propTypes = {
   errorClass: _propTypes2.default.string,
   errorStyle: _propTypes2.default.object,
   singleImage: _propTypes2.default.bool,
-  defaultImage: _propTypes2.default.string,
-  maxCount: _propTypes2.default.number
+  defaultImages: _propTypes2.default.array,
+  maxCount: _propTypes2.default.number,
+  onError: _propTypes2.default.func
+
 };
 
 exports.default = ReactImageUploadComponent;

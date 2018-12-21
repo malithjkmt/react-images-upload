@@ -225,7 +225,7 @@ class ReactImageUploadComponent extends React.Component {
       return (
         <div key={index} className="uploadPictureContainer">
           <div className="deleteImage" onClick={() => this.removeImage(picture, this.state.defaultPix, true)}>X</div>
-          <img src={picture} className="uploadPicture" alt="preview" />
+          <img src={picture.url} className="uploadPicture" alt="preview" />
         </div>
       );
     });

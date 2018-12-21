@@ -3,6 +3,10 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import ImageUploader from './component/index.js';
 import { rainbow } from 'react-syntax-highlighter/styles/hljs';
 
+const temp = [{ url: "https://s3-ap-southeast-1.amazonaws.com/onawadak-userfiles/public/1545389172268-angrybirds.jpg" },
+{ url: "https://s3-ap-southeast-1.amazonaws.com/onawadak-userfiles/public/1545389172272-iceage.jpg" },
+{ url: "https://s3-ap-southeast-1.amazonaws.com/onawadak-userfiles/public/1545389172273-lionking.jpg" }];
+
 const steps = {
     one: `npm install --save react-images-upload`,
     two: `import React from 'react';
@@ -38,6 +42,42 @@ class App extends React.Component {
 
 
 export default class App extends React.PureComponent {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            CallCount: 2,  // TODO: due to this issue https://github.com/JakeHartnell/react-images-upload/issues/88
+            newImageFilesList: [],
+            defaultImageUrlList: [],
+            removedDefaultImages: [],
+            finalImageUrlList: []
+        };
+        this.onDrop = this.onDrop.bind(this);
+
+    }
+
+    onDrop(imageFiles, defaultImgUrls, removedDefaultImages) {
+        console.log("---imageFiles", imageFiles);   //imageFiles - upload to s3
+        console.log("---defaultImgUrls", defaultImgUrls)    //defaultImgUrls - stays in db
+        console.log("---removedDefaultImages", removedDefaultImages);   //removedDefaultImages - to be removed from s3
+
+        this.setState({
+            CallCount: 1
+        }, () => {
+            if (this.state.CallCount === 1) {
+                this.setState({
+                    newImageFilesList: imageFiles,
+                    defaultImageUrlList: defaultImgUrls,
+                    removedDefaultImages: removedDefaultImages
+                })
+            }
+            this.setState({
+                CallCount: 2
+            });
+        });
+
+    }
+
     render() {
         return (
             <div className="page">
@@ -45,6 +85,7 @@ export default class App extends React.PureComponent {
                 <p>Simple component for upload and validate (client side) images with preview built with React.js.</p>
                 <div className="head">Demo</div>
                 <ImageUploader style={{ maxWidth: '500px', margin: "20px auto" }}
+                    defaultImages={temp}
                     withPreview={true}
                     onChange={this.onDrop}
                     maxCount={6} />

@@ -45,7 +45,9 @@ export default class App extends React.PureComponent {
                 <p>Simple component for upload and validate (client side) images with preview built with React.js.</p>
                 <div className="head">Demo</div>
                 <ImageUploader style={{ maxWidth: '500px', margin: "20px auto" }}
-                               withPreview={true} />
+                    withPreview={true}
+                    onChange={this.onDrop}
+                    maxCount={6} />
                 <div className="head">Installation</div>
                 <SyntaxHighlighter language='javascript' showLineNumbers={true} style={rainbow}>
                     {steps.one}
@@ -83,13 +85,13 @@ export default class App extends React.PureComponent {
                             <td className="text-left">-</td>
                             <td className="text-left">On change handler for the input.</td>
                         </tr>
-                         <tr>
+                        <tr>
                             <td className="text-left">onDelete</td>
                             <td className="text-left">Function</td>
                             <td className="text-left">-</td>
                             <td className="text-left">On delete handler for the image.</td>
                         </tr>
-                       <tr>
+                        <tr>
                             <td className="text-left">buttonClassName</td>
                             <td className="text-left">String</td>
                             <td className="text-left">-</td>
@@ -197,7 +199,7 @@ export default class App extends React.PureComponent {
                             <td className="text-left">['.jpg', '.gif', '.png', '.gif']</td>
                             <td className="text-left">Inline styles for errors .</td>
                         </tr>
-                    <tr>
+                        <tr>
                             <td className="text-left">singleImage</td>
                             <td className="text-left">Boolean</td>
                             <td className="text-left">false</td>

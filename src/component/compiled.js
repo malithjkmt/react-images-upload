@@ -332,7 +332,7 @@ var ReactImageUploadComponent = function (_React$Component) {
               } },
             'X'
           ),
-          _react2.default.createElement('img', { src: picture, className: 'uploadPicture', alt: 'preview' })
+          _react2.default.createElement('img', { src: picture.url, className: 'uploadPicture', alt: 'preview' })
         );
       });
     }
